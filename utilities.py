@@ -20,22 +20,22 @@ class Timer(object):
 
 class Printer(object):
     """A class for printing text animations."""
-	def __init__(self, wait_time):
-		self.wait_time = wait_time
-		self.t = time.time()
-		self.last_length = 0
-	def overwrite(self, message='', wait=True):
+    def __init__(self, wait_time):
+        self.wait_time = wait_time
+        self.t = time.time()
+        self.last_length = 0
+    def overwrite(self, message='', wait=True):
         """Prints message without starting a new line."""
-		if time.time() - self.t >= self.wait_time or not wait:
-			sys.stdout.write('\r' + ' '*self.last_length + '\r')
-			sys.stdout.flush()
-			sys.stdout.write(message)
-			sys.stdout.flush()
-			self.t = time.time()
-			self.last_length = len(message)
-	def clear(self):
+        if time.time() - self.t >= self.wait_time or not wait:
+            sys.stdout.write('\r' + ' '*self.last_length + '\r')
+            sys.stdout.flush()
+            sys.stdout.write(message)
+            sys.stdout.flush()
+            self.t = time.time()
+            self.last_length = len(message)
+    def clear(self):
         """Clears whatever was last written using the method overwrite without starting a new line."""
-		self.overwrite(wait=False)
+        self.overwrite(wait=False)
 
 import numpy as np
 class OneHotEncoder(object):
