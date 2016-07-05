@@ -5,6 +5,7 @@ from sklearn.datasets import fetch_mldata
 import numpy as np
 from neuralnet import build_mnist_model
 from utilities import Printer, unzip, OneHotEncoder
+import pylab
 
 def get_mnist_data(training_size, testing_size):
     msg = "There are only 70,000 MNIST datapoints"
