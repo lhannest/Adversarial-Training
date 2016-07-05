@@ -1,6 +1,25 @@
 import sys
 import time
 import datetime
+from PIL import Image
+import os
+import numpy as np
+
+def imsave(img, filename, mode='L'):
+    img = np.clip(img, 0, 255)
+    img = np.asarray(img, dtype='int8')
+    img = Image.fromarray(img, mode=mode)
+
+    if os.path.exists('{}.png'.format(filename)):
+        i = 1
+        while os.path.exists('{}({:d}).png'.format(filename, i)):
+            i += 1
+        filename = '{}({:d}).png'.format(filename, i)
+    else:
+        filename = '{}.png'.format(filename)
+
+    img.save(filename)
+
 
 def unzip(l):
     # http://stackoverflow.com/a/12974504
@@ -47,8 +66,12 @@ class OneHotEncoder(object):
         Encodes a category or list of categories into a one-hot array or a list of one-hot arrays
         :param category: an integer or list of integers representing categories.
         """
-        a = np.zeros((len(categories), self.number_of_categories))
-        a[np.arange(a.shape[0]), categories.astype('int')] = 1
+        if isinstance(categories, int):
+            a = np.zeros(self.number_of_categories)
+            a[categories] = 1
+        else:
+            a = np.zeros((len(categories), self.number_of_categories))
+            a[np.arange(a.shape[0]), categories.astype('int')] = 1
         return a
 
     def decode(self, onehot):
@@ -59,3 +82,7 @@ class OneHotEncoder(object):
         # ensure that onehot is of shape (n, m)
         onehot = np.asarray(onehot)
         return np.argmax(onehot, axis=1)
+
+    def maxval(self, onehot):
+        onehot = np.asarray(onehot)
+        return np.amax(onehot, axis=len(onehot.shape) - 1)
