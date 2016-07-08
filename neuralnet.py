@@ -13,28 +13,21 @@ def build_neural_net(X, filename=None):
         weights1.set_value(np.asarray(saved_weights[0], dtype=theano.config.floatX))
         weights2.set_value(np.asarray(saved_weights[1], dtype=theano.config.floatX))
 
-    return Y2
+    return Y2, weights1, weights2
 
 def build_mnist_model(filename=None):
+    """Builds functions with which to train, evaluate and save the neural network"""
     inputs = T.matrix()
     targets = T.matrix()
     alpha = T.scalar()
 
-    w1 = None
-    w2 = None
-    if filename != None:
-        w = np.load(filename)
-        w1 = w[0]
-        w2 = w[1]
-
-    outputs1, weights1 = build_layer(inputs, input_size=784, output_size=300, weights=w1)
-    outputs2, weights2 = build_layer(outputs1, input_size=300, output_size=10, activation=nnet.softmax, weights=w2)
+    outputs, weights1, weights2 = build_neural_net(inputs, filename)
     params = [weights1, weights2]
 
-    mse = T.mean(T.sqr(outputs2 - targets))
+    mse = T.mean(T.sqr(outputs - targets))
     updates = [(p, p - alpha * T.grad(cost=mse, wrt=p)) for p in params]
 
-    evaluate_model = theano.function(inputs=[inputs], outputs=outputs2, allow_input_downcast=True)
+    evaluate_model = theano.function(inputs=[inputs], outputs=outputs, allow_input_downcast=True)
     train_model = theano.function(inputs=[inputs, targets, alpha], outputs=mse, updates=updates, allow_input_downcast=True)
 
     def save_model(filename):
