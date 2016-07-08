@@ -3,6 +3,18 @@ import theano.tensor as T
 import theano.tensor.nnet as nnet
 import numpy as np
 
+def build_neural_net(X, filename=None):
+    """Builds the Theano symbolic neural network"""
+    Y1, weights1 = build_layer(X, input_size=784, output_size=300)
+    Y2, weights2 = build_layer(Y1, input_size=300, output_size=10, activation=nnet.softmax)
+
+    if filename != None:
+        saved_weights = np.load(filename)
+        weights1.set_value(np.asarray(saved_weights[0], dtype=theano.config.floatX))
+        weights2.set_value(np.asarray(saved_weights[1], dtype=theano.config.floatX))
+
+    return Y2
+
 def build_mnist_model(filename=None):
     inputs = T.matrix()
     targets = T.matrix()
@@ -53,13 +65,13 @@ def build_xor_model():
 
     return evaluate_model, train_model
 
-def build_layer(X, input_size, output_size, activation=nnet.sigmoid, weights=None):
+def build_layer(X, input_size, output_size, activation=nnet.sigmoid):
     r = np.sqrt(6. / (input_size + output_size))
-    if weights is None:
-        w = np.random.uniform(-r, r, (input_size + 1, output_size))
-    else:
-        w = weights
+    w = np.random.uniform(-r, r, (input_size + 1, output_size))
     W = theano.shared(np.asarray(w, dtype=theano.config.floatX))
+    # Here we force X to be a 2d array. If X is already a 2d array, it will be unchanged
+    X = X.reshape((-1, X.shape[-1]))
+    # Here we append a column of ones, for the bias inputs of this layer
     X = T.concatenate([X, T.ones((X.shape[0], 1))], axis=1)
     Z = T.dot(X, W)
     Y = activation(Z)
