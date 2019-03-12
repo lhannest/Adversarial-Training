@@ -1,4 +1,6 @@
-#### Adversarial-Training
+# Adversarial-Training
+
+This README has been created from: [Generating_Adversarial_Images_with_MNIST.ipynb](Generating_Adversarial_Images_with_MNIST.ipynb)
 
 ```python
 import theano
